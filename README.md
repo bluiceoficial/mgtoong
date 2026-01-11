@@ -1,76 +1,128 @@
 # MGTOONG
 
-Versão em Go (Golang) do MGTOON.
+**MGTOONG** é uma biblioteca em Go para trabalhar com TOON (Token-Oriented Object Notation), um formato simples e leve para armazenar coleções de registros com chave primária.
 
-MGTOONG é uma biblioteca para trabalhar com Token-Oriented Object Notation no Golang.
+Projetada para ser direta e sem dependências externas, MGTOONG facilita criação, leitura, atualização e exclusão de registros em arquivos `.toon` ou em memória.
 
-## Installation
+---
 
-`go get github.com/mugomes/mgtoong`
+## ✨ Recursos
 
-## Example
+* ✅ CRUD simples (Create / Read / Update / Delete)
+* 💾 Suporte a arquivo `.toon` com LoadFile / SaveFile
+* 🔑 Chave primária por coleção
+* 🗂️ Manipulação de coleções (tables) independentes
+* 📦 Leve — usa apenas a biblioteca padrão do Go
+* 🧪 API intuitiva para uso em CLIs, ferramentas e protótipos
 
+---
+
+## 📦 Instalação
+
+```bash
+go get github.com/mugomes/mgtoong
 ```
-toon := &mgtoong.MGTOONG{}
 
-// Criando Usuários
-toon.Create("users", []string{"id", "nome", "active"}, "id")
+---
 
-// Abrindo arquivo toon caso exista
-toon.LoadFile("users.toon", "id")
+## 🚀 Exemplo de uso
 
-// Adicionando registros
-toon.Add(map[string]string{
-	"id":     "1",
-	"nome":   "Ana",
-	"active": "0",
-})
-toon.Add(map[string]string{
-	"id":     "2",
-	"nome":   "Maria",
-	"active": "0",
-})
-toon.Add(map[string]string{
-	"id":     "3",
-	"nome":   "João",
-	"active": "0",
-})
+```go
+import (
+    "fmt"
+    "log"
 
-// Lendo todos registros
-rows := toon.ReadAll()
+    "github.com/mugomes/mgtoong"
+)
 
-for _, row := range rows {
-	fmt.Println(row["id"], row["nome"])
+func main() {
+    toon := &mgtoong.MGTOONG{}
+
+    // Criar uma coleção "users" com colunas e chave primária "id"
+    toon.Create("users", []string{"id", "nome", "active"}, "id")
+
+    // Carregar arquivo caso exista (mantém a chave primária)
+    toon.LoadFile("users.toon", "id")
+
+    // Adicionar registros
+    toon.Add(map[string]string{
+        "id":     "1",
+        "nome":   "Ana",
+        "active": "0",
+    })
+    toon.Add(map[string]string{
+        "id":     "2",
+        "nome":   "Maria",
+        "active": "0",
+    })
+
+    // Ler todos os registros
+    rows := toon.ReadAll("users")
+    for _, row := range rows {
+        fmt.Println(row["id"], row["nome"])
+    }
+
+    // Ler um registro pela chave primária
+    valor := toon.ReadOne("users", "1")
+    fmt.Println(valor["nome"])
+
+    // Atualizar registro
+    toon.Update("users", "1", map[string]string{
+        "active": "1",
+    })
+
+    // Excluir registro
+    toon.Delete("users", "2")
+
+    // Representação em string no formato TOON
+    fmt.Println(toon.ToString("users"))
+
+    // Salvar em disco
+    if err := toon.SaveFile("users.toon"); err != nil {
+        log.Fatal(err)
+    }
 }
-
-// Lendo os valores das colunas da ID 1 (chave primária)
-valor := toon.ReadOne("1")
-fmt.Println(valor["nome"])
-
-// Atualizando registro
-toon.Update("1", map[string]string{
-	"active": "1",
-})
-
-// Excluindo registro
-toon.Delete("2")
-
-// Formato TOON
-fmt.Println(toon.ToString())
-
-// Salvar arquivo em formato toon
-toon.SaveFile("users.toon")
 ```
 
-## Support
+---
 
-- GitHub Sponsors: https://github.com/sponsors/mugomes/
-- More Options: https://www.mugomes.com.br/p/apoie.html
+## 🧠 Como funciona
+
+* Cada coleção tem colunas definidas e uma chave primária.
+* Registros são armazenados como pares coluna→valor (strings).
+* O arquivo `.toon` é uma serialização do estado interno; o projeto expõe métodos para carregar e salvar.
+* O design prioriza simplicidade e previsibilidade, ideal para dados de configuração leve e protótipos.
+
+---
+
+## 🔍 Formato de exemplo (.toon)
+
+Exemplo simplificado de saída gerada por `ToString("users")`:
+
+```
+TABLE users PK id
+COLUMNS id nome active
+ROW 1 Ana 0
+ROW 2 Maria 0
+END
+```
+
+---
+
+## 👤 Autor
+
+**Murilo Gomes Julio**
+
+🔗 https://mugomes.github.io
+
+📺 https://youtube.com/@mugomesoficial
+
+---
 
 ## License
 
-The MGTOONG is provided under:
+Copyright (c) 2025-2026 Murilo Gomes Julio
 
-[SPDX-License-Identifier: MIT](https://github.com/mugomes/mgtoong/blob/main/LICENSE)
+Licensed under the [MIT](https://github.com/mugomes/mgtoong/blob/main/LICENSE) license.
 
-All contributions to the MGTOONG are subject to this license.
+All contributions to MGTOONG are subject to this license.
