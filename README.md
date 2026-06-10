@@ -1,5 +1,8 @@
 # MGTOONG
 
+> [!NOTE]
+> This repository has been migrated to Codeberg, please see: https://codeberg.org/bluice/mgtoong
+
 **MGTOONG** é uma biblioteca em Go para trabalhar com TOON (Token-Oriented Object Notation), um formato simples e leve para armazenar coleções de registros com chave primária.
 
 Projetada para ser direta e sem dependências externas, MGTOONG facilita criação, leitura, atualização e exclusão de registros em arquivos `.toon` ou em memória.
